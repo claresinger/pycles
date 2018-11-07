@@ -22,6 +22,7 @@ def get_netcdf_prefix():
     return sp.check_output(['nc-config', '--prefix']).strip().decode()
 
 if sys.platform == 'darwin':
+    print('darwin')
     #Compile flags for MacOSX
     library_dirs = []
     libraries = []
@@ -57,8 +58,8 @@ elif (platform.machine()  == 'x86_64') and ('LD_LIBRARY_PATH' in os.environ):
     extra_compile_args+=['-std=c99', '-O3', '-march=native', '-Wno-unused',
                          '-Wno-#warnings', '-Wno-maybe-uninitialized', '-Wno-cpp', '-Wno-array-bounds','-fPIC']
     extra_objects=['./RRTMG/rrtmg_build/rrtmg_combined.o']
-    netcdf_include = '/share/apps/software/rhel6/software/netCDF/4.4.0-foss-2016a/include'
-    netcdf_lib = '/share/apps/software/rhel6/software/netCDF/4.4.0-foss-2016a/lib'
+    netcdf_include = '/central/software/netcdf-c/4.6.1/include'
+    netcdf_lib =  '/central/software/netcdf-c/4.6.1/lib'
     f_compiler = 'gfortran'
 
 else:
@@ -73,8 +74,8 @@ else:
         extra_compile_args+=['-std=c99', '-O3', '-march=native', '-Wno-unused',
                              '-Wno-#warnings', '-Wno-maybe-uninitialized', '-Wno-cpp', '-Wno-array-bounds','-fPIC']
         extra_objects=['./RRTMG/rrtmg_build/rrtmg_combined.o']
-        netcdf_include = '/share/apps/software/rhel6/software/netCDF/4.4.0-foss-2016a/include'
-        netcdf_lib = '/share/apps/software/rhel6/software/netCDF/4.4.0-foss-2016a/lib'
+        netcdf_include = '/central/software/netcdf-c/4.6.1/include'
+        netcdf_lib =  '/central/software/netcdf-c/4.6.1/lib'
         f_compiler = 'gfortran'
 
     else: 
