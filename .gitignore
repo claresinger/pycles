@@ -17,3 +17,5 @@ _static/
 _templates/
 *.png
 *.mod
+*.out
+out
