@@ -16,3 +16,5 @@ _templates/
 *.png
 *.mod
 *.Restar*
+*.out
+out

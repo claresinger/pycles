@@ -961,7 +961,7 @@ cdef class ForcingZGILS:
         # Current climate/control advection forcing values (modified below for climate change)
         self.t_adv_max = -1.2/86400.0  # K/s BL tendency of temperature due to horizontal advection
         self.qt_adv_max = -0.6e-3/86400.0 # kg/kg/s BL tendency of qt due to horizontal advection
-        self.tau_relax_inverse = 1.0/(6.0*3600)
+        self.tau_relax_inverse = 1.0/(24.0*3600)
         # relaxation time scale. Note this differs from Tan et al 2016 but is consistent with Zhihong's code. Due to the
         # way he formulates the relaxation coefficient formula, effective timescale in FT is about 24 hr
         self.alpha_h = 1.2 # ad hoc qt/qt_ref threshold ratio for determining BL height
@@ -1157,7 +1157,7 @@ cdef class ForcingZGILS:
             for k in xrange(Gr.dims.nlg[2]):
                 z_h = Gr.zl_half[k]/self.h_BL
                 factor = fmax(fmin((z_h-1.2)/0.3, 1.0), 0.0)
-                xi_relax[k] = 0.5*self.tau_relax_inverse*(1.0 -   cos(factor))
+                xi_relax[k] = 0.5*self.tau_relax_inverse*(1.0 -   cos(pi*factor))
 
                 # Here we find the nudging rates
                 self.source_qt_nudge[k] = xi_relax[k] * (self.reference_qt[k]-qtmean[k])
