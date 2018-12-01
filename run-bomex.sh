@@ -13,4 +13,4 @@
 
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
-srun python main.py Bomex.in
+srun python main.py IndexFiles/Bomex.in

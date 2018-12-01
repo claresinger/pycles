@@ -13,4 +13,4 @@
 
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
-srun python main.py DYCOMS_RF01.in
+srun python main.py IndexFiles/DYCOMS_RF01.in
