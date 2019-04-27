@@ -591,7 +591,7 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
 
     RS.initialize(Gr ,Th, NS, Pa)
 
-    #Set up $\tehta_l$ and $\qt$ profiles
+    #Set up $\theta_l$ and $\qt$ profiles
     cdef:
         Py_ssize_t i
         Py_ssize_t j
@@ -614,8 +614,22 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
             thetal[k] = 288.3
             qt[k] = 9.45/1000.0
         if Gr.zl_half[k] > 795.0:
-            thetal[k] = 295.0 + (Gr.zl_half[k] - 795.0)**(1.0/3.0)
-            qt[k] = (5.0 - 3.0 * (1.0 - np.exp(-(Gr.zl_half[k] - 795.0)/500.0)))/1000.0
+            try:
+		ftT0 = namelist['initialization']['dycoms_ftT0']	# can set inversion strength in namelist
+		p = RS.p0_half[k]
+		thetal0 = compute_thetal(p,ftT0,0.0)			# calculate change in thetal0 (assuming ql=0)
+		ftRH = 0.3
+		pstar = self.CC.LT.fast_lookup(ftT0)
+		qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
+		qt0 = ftRH * qstar  					# calculate change in qt0 (assuming ql=0)
+		Pa.root_print("thetal0, qt0", thetal0, qt0)
+	    except:
+		thetal0 = 295.0
+		qt0 = 5.0
+		Pa.root_print("defaulting to thetal0=295.0 and qt0=5.0")
+
+	    thetal[k] = thetal0 + (Gr.zl_half[k] - 795.0)**(1.0/3.0)			
+            qt[k] = (qt0 - 3.0 * (1.0 - np.exp(-(Gr.zl_half[k] - 795.0)/500.0)))/1000.0	
         v[k] = -9.0 + 5.6 * Gr.zl_half[k]/1000.0 - RS.v0
         u[k] = 3.0 + 4.3*Gr.zl_half[k]/1000.0 - RS.u0
 

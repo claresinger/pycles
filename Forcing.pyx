@@ -332,8 +332,8 @@ cdef class ForcingGabls:
 
 cdef class ForcingDyCOMS_RF01:
     def __init__(self,casename):
-        self.divergence = 3.75e-6
-        self.coriolis_param = 2.0 * omega * sin(31.5 * pi / 180.0 )
+	self.divergence = 3.75e-6
+	self.coriolis_param = 2.0 * omega * sin(31.5 * pi / 180.0 )
         if casename == 'DYCOMS_RF02':
             self.rf02_flag = True
         else:
@@ -351,7 +351,12 @@ cdef class ForcingDyCOMS_RF01:
         self.vg = np.empty((Gr.dims.nlg[2]),dtype=np.double, order='c')
 
         if self.rf02_flag:
-            with nogil:
+            try:
+                self.divergence = namelist['initialization']['dycoms_d']         # can set the large-scale horizontal divergence from the namelist
+            except:
+                self.divergence = 3.75e-6
+                Pa.root_print("defaulting to D=3.75e-6")
+	    with nogil:
                 for k in range(Gr.dims.nlg[2]):
                     self.subsidence[k] = -Gr.zl_half[k] * self.divergence
                     self.ug[k] = 3.0 + 4.3*Gr.zl_half[k]/1000.0

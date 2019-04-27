@@ -636,11 +636,17 @@ def DYCOMS_RF02():
     namelist['conditional_stats']['frequency'] = 600.0
     namelist['conditional_stats']['stats_dir'] = 'cond_stats'
 
-
     namelist['meta'] = {}
     namelist['meta']['simname'] = 'DYCOMS_RF02'
     namelist['meta']['casename'] = 'DYCOMS_RF02'
+    
+    namelist['radiation'] = {}
+    namelist['radiation']['dycoms_f0'] = 70.0
 
+    namelist['initialization'] = {}
+    namelist['initialization']['dycoms_d'] = 3.75e-6
+    namelist['initialization']['dycoms_ftT0'] = 6.5
+ 
     return namelist
 
 def SMOKE():
