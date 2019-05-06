@@ -615,21 +615,22 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
             qt[k] = 9.45/1000.0
         if Gr.zl_half[k] > 795.0:
             try:
-		p = RS.p0_half[k]
-		thetal0 = namelist['initialization']['dycoms_thetal0']	# can set inversion strength in namelist
-		ftT0 = thetal0 * (p/p_tilde)**(287.0/cp_ref)		# calculate temperature jump from pot. temp jump
-		ftRH = 0.50
-		pstar = self.CC.LT.fast_lookup(ftT0)
-		qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
-		qt0 = ftRH * qstar  					# calculate change in qt0 (assuming ql=0)
-		Pa.root_print("thetal0, qt0", thetal0, qt0)
-	    except:
-		thetal0 = 295.0
-		qt0 = 5.0
-		Pa.root_print("defaulting to thetal0=295.0 and qt0=5.0")
+                p = RS.p0_half[k]
+                thetal0 = namelist['initialization']['dycoms_thetal0']	# can set inversion strength in namelist
+                ftT0 = thetal0 * (p/p_tilde)**(287.0/cp_ref)		# calculate temperature jump from pot. temp jump
+                ftRH = 0.50
+                pstar = Th.get_pv_star(ftT0)
+                qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
+                qt0 = ftRH * qstar  					# calculate change in qt0 (assuming ql=0)
+                Pa.root_print("thetal0 = " + thetal0 + " and  qt0 = " + qt0)
+            except:
+                thetal0 = 295.0
+                qt0 = 5.0
+                Pa.root_print("defaulting to thetal0=295.0 and qt0=5.0")
 
-	    thetal[k] = thetal0 + (Gr.zl_half[k] - 795.0)**(1.0/3.0)			
+            thetal[k] = thetal0 + (Gr.zl_half[k] - 795.0)**(1.0/3.0)			
             qt[k] = (qt0 - 3.0 * (1.0 - np.exp(-(Gr.zl_half[k] - 795.0)/500.0)))/1000.0	
+        
         v[k] = -9.0 + 5.6 * Gr.zl_half[k]/1000.0 - RS.v0
         u[k] = 3.0 + 4.3*Gr.zl_half[k]/1000.0 - RS.u0
 

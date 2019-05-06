@@ -151,13 +151,13 @@ cdef class RadiationDyCOMS_RF01(RadiationBase):
             self.f0 = namelist['radiation']['dycoms_f0']		# can set the cloud-top cooling from the namelist
         except:
             self.f0 = 70.0
-	    Pa.root_print("defaulting to f0=70.0")
+            Pa.root_print("defaulting to f0=70.0")
         self.f1 = 22.0
         try:
-	    self.divergence = namelist['initialization']['dycoms_d']	# can set the large-scale horizontal divergence from the namelist
-	except:
-	    self.divergence = 3.75e-6			
-	    Pa.root_print("defaulting to D=3.75e-6")
+            self.divergence = namelist['initialization']['dycoms_d']	# can set the large-scale horizontal divergence from the namelist
+        except:
+            self.divergence = 3.75e-6	
+            Pa.root_print("defaulting to D=3.75e-6")
 	
         return
 
