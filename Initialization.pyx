@@ -615,10 +615,10 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
             qt[k] = 9.45/1000.0
         if Gr.zl_half[k] > 795.0:
             try:
-		ftT0 = namelist['initialization']['dycoms_ftT0']	# can set inversion strength in namelist
 		p = RS.p0_half[k]
-		thetal0 = compute_thetal(p,ftT0,0.0)			# calculate change in thetal0 (assuming ql=0)
-		ftRH = 0.3
+		thetal0 = namelist['initialization']['dycoms_thetal0']	# can set inversion strength in namelist
+		ftT0 = thetal0 * (p/p_tilde)**(287.0/cp_ref)		# calculate temperature jump from pot. temp jump
+		ftRH = 0.50
 		pstar = self.CC.LT.fast_lookup(ftT0)
 		qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
 		qt0 = ftRH * qstar  					# calculate change in qt0 (assuming ql=0)
