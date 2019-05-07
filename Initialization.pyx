@@ -621,8 +621,8 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
                 ftRH = 0.50
                 pstar = Th.get_pv_star(ftT0)
                 qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
-                qt0 = ftRH * qstar  					# calculate change in qt0 (assuming ql=0)
-                Pa.root_print("thetal0 = " + thetal0 + " and  qt0 = " + qt0)
+                qt0 = ftRH * qstar * 1000.0  				# calculate change in qt0 (assuming ql=0)
+                Pa.root_print("thetal0 = " + str(thetal0) + " and  qt0 = " + str(qt0))
             except:
                 thetal0 = 295.0
                 qt0 = 5.0
