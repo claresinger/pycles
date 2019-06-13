@@ -609,25 +609,27 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
         double [:] u = np.zeros((Gr.dims.nlg[2],),dtype=np.double,order='c')
         double [:] v = np.zeros((Gr.dims.nlg[2],),dtype=np.double,order='c')
 
+    jump_set = 0.0
     for k in xrange(Gr.dims.nlg[2]):
         if Gr.zl_half[k] <=795.0:
             thetal[k] = 288.3
             qt[k] = 9.45/1000.0
         if Gr.zl_half[k] > 795.0:
-            try:
-                p = RS.p0_half[k]
-                thetal0 = namelist['initialization']['dycoms_thetal0']	# can set inversion strength in namelist
-                ftT0 = thetal0 * (p/p_tilde)**(287.0/cp_ref)		# calculate temperature jump from pot. temp jump
-                ftRH = 0.50
-                pstar = Th.get_pv_star(ftT0)
-                qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
-                qt0 = ftRH * qstar * 1000.0  				# calculate change in qt0 (assuming ql=0)
-                Pa.root_print("thetal0 = " + str(thetal0) + " and  qt0 = " + str(qt0))
-            except:
-                thetal0 = 295.0
-                qt0 = 5.0
-                Pa.root_print("defaulting to thetal0=295.0 and qt0=5.0")
-
+            if jump_set < 1.0:
+                jump_set = 2.0
+                try:
+                    p = RS.p0_half[k]
+                    thetal0 = namelist['initialization']['dycoms_thetal0']	# can set inversion strength in namelist
+                    ftT0 = thetal0 * (p/p_tilde)**(287.0/cp_ref)		# calculate temperature jump from pot. temp jump
+                    ftRH = 0.425
+                    pstar = Th.get_pv_star(ftT0)
+                    qstar = eps_v * pstar / (p + (eps_v-1.0) * pstar)
+                    qt0 = ftRH * qstar * 1000.0  				# calculate change in qt0 (assuming ql=0)
+                    Pa.root_print("thetal0 = " + str(thetal0) + " and  qt0 = " + str(qt0))
+                except:
+                    thetal0 = 295.0
+                    qt0 = 5.0
+                    Pa.root_print("defaulting to thetal0=295.0 and qt0=5.0")
             thetal[k] = thetal0 + (Gr.zl_half[k] - 795.0)**(1.0/3.0)			
             qt[k] = (qt0 - 3.0 * (1.0 - np.exp(-(Gr.zl_half[k] - 795.0)/500.0)))/1000.0	
         
