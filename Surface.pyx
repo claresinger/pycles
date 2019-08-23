@@ -557,8 +557,14 @@ cdef class SurfaceDYCOMS_RF01(SurfaceBase):
 
 cdef class SurfaceDYCOMS_RF02(SurfaceBase):
     def __init__(self,namelist, LatentHeat LH):
-        self.ft = 16.0
-        self.fq = 93.0
+        # add SHF and LHF to be set from namelist
+        try:
+            self.ft = namelist['initialization']['dycoms_shf']
+            self.fq = namelist['initialization']['dycoms_lhf']
+        except:
+            self.ft = 16.0
+            self.fq = 93.0
+
         self.gustiness = 0.0
         self.ustar = 0.25
         self.L_fp = LH.L_fp
