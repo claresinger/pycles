@@ -560,10 +560,17 @@ cdef class SurfaceDYCOMS_RF02(SurfaceBase):
         # add SHF and LHF to be set from namelist
         try:
             self.ft = namelist['initialization']['dycoms_shf']
-            self.fq = namelist['initialization']['dycoms_lhf']
+            print("SHF = " + str(self.ft))
         except:
             self.ft = 16.0
+            print("defaulting to SHF = 16")
+        
+        try:
+            self.fq = namelist['initialization']['dycoms_lhf']
+            print("LHF = " + str(self.fq))
+        except:
             self.fq = 93.0
+            print("defaulting to LHF = 93")        
 
         self.gustiness = 0.0
         self.ustar = 0.25
