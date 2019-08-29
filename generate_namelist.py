@@ -645,6 +645,7 @@ def DYCOMS_RF02():
 
     namelist['initialization'] = {}
     namelist['initialization']['dycoms_d'] = 3.75e-6
+    namelist['initialization']['dycoms_zi_init'] = 795.0
     namelist['initialization']['dycoms_thetal0'] = 295.0
     namelist['initialization']['dycoms_shf'] = 16.0
     namelist['initialization']['dycoms_lhf'] = 93.0

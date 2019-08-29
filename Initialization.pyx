@@ -610,11 +610,12 @@ def InitDYCOMS_RF02(namelist,Grid.Grid Gr,PrognosticVariables.PrognosticVariable
         double [:] v = np.zeros((Gr.dims.nlg[2],),dtype=np.double,order='c')
 
     jump_set = 0.0
+    zi_init = namelist['initialization']['dycoms_zi_init']
     for k in xrange(Gr.dims.nlg[2]):
-        if Gr.zl_half[k] <=795.0:
+        if Gr.zl_half[k] <= zi_init:
             thetal[k] = 288.3
             qt[k] = 9.45/1000.0
-        if Gr.zl_half[k] > 795.0:
+        if Gr.zl_half[k] > zi_init:
             if jump_set < 1.0:
                 jump_set = 2.0
                 try:
