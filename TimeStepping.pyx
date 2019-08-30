@@ -62,6 +62,12 @@ cdef class TimeStepping:
             Pa.root_print('t_max (time at end of simulation) not given in name list! Killing Simulation Now')
             Pa.kill()
 
+        # CLARE: implement mean state acceleration for DYCOMS RF02
+        try:
+            self.acceleration_factor = namelist['time_stepping']['acceleration_factor']
+        except:
+            self.acceleration_factor = 1.0
+
         #Now initialize the correct time stepping routine
         if self.ts_type == 2:
             self.initialize_second(PV)
@@ -107,9 +113,36 @@ cdef class TimeStepping:
 
         return
 
+    # CLARE: implement mean state acceleration for DYCOMS RF02
+    cpdef accelerate_tendencies(self, Grid.Grid Gr, PrognosticVariables.PrognosticVariables PV, ParallelMPI.ParallelMPI Pa):
+        cdef:
+            Py_ssize_t u_shift = PV.get_varshift(Gr,'u')
+            Py_ssize_t v_shift = PV.get_varshift(Gr,'v')
+            Py_ssize_t s_shift = PV.get_varshift(Gr, 's')
+            Py_ssize_t qt_shift = PV.get_varshift(Gr, 'qt')
+            double [:] ut_mean = Pa.HorizontalMean(Gr, &PV.tendencies[u_shift])
+            double [:] vt_mean = Pa.HorizontalMean(Gr, &PV.tendencies[v_shift])
+            double [:] qtt_mean = Pa.HorizontalMean(Gr, &PV.tendencies[qt_shift])
+            double [:] st_mean = Pa.HorizontalMean(Gr, &PV.tendencies[s_shift])
+            Py_ssize_t istride = Gr.dims.nlg[1] * Gr.dims.nlg[2]
+            Py_ssize_t jstride = Gr.dims.nlg[2]
+            Py_ssize_t i,j,k,ishift,jshift,ijk
 
+        with nogil:
+            for i in xrange(Gr.dims.nlg[0]):
+                ishift = i * istride
+                for j in xrange(Gr.dims.nlg[1]):
+                    jshift = j * jstride
+                    for k in xrange(Gr.dims.nlg[2]):
+                        ijk = ishift + jshift + k
+                        PV.tendencies[u_shift + ijk] += (self.acceleration_factor-1.0) * ut_mean[k]
+                        PV.tendencies[v_shift + ijk] += (self.acceleration_factor-1.0) * vt_mean[k]
+                        PV.tendencies[s_shift + ijk] += (self.acceleration_factor-1.0) * st_mean[k]
+                        PV.tendencies[qt_shift + ijk] += (self.acceleration_factor-1.0) * qtt_mean[k]
+        return
+
+    
     cpdef update_second(self, Grid.Grid Gr, PrognosticVariables.PrognosticVariables PV):
-
         cdef:
             Py_ssize_t i
 
@@ -123,7 +156,9 @@ cdef class TimeStepping:
                 for i in xrange(Gr.dims.npg*PV.nv):
                     PV.values[i] = 0.5 * (self.value_copies[0,i] + PV.values[i] + PV.tendencies[i] * self.dt)
                     PV.tendencies[i] = 0.0
-                self.t += self.dt
+
+                # CLARE: implement mean state acceleration for DYCOMS RF02
+                self.t += self.dt * self.acceleration_factor
 
         return
 
@@ -146,7 +181,9 @@ cdef class TimeStepping:
                 for i in xrange(Gr.dims.npg*PV.nv):
                     PV.values[i] = (1.0/3.0) * self.value_copies[0,i] + (2.0/3.0)*(PV.values[i] + PV.tendencies[i]*self.dt)
                     PV.tendencies[i] = 0.0
-                self.t += self.dt
+                
+                # CLARE: implement mean state acceleration for DYCOMS RF02
+                self.t += self.dt * self.acceleration_factor
 
         return
 
@@ -184,7 +221,9 @@ cdef class TimeStepping:
                                     + 0.096059710526147*self.value_copies[2,i] +0.063692468666290*self.tendency_copies[0,i]*self.dt
                                     + 0.386708617503269*PV.values[i] + 0.226007483236906*PV.tendencies[i]*self.dt)
                     PV.tendencies[i] = 0.0
-                self.t += self.dt
+                
+                # CLARE: implement mean state acceleration for DYCOMS RF02
+                self.t += self.dt * self.acceleration_factor
         return
 
     cdef void initialize_second(self,PrognosticVariables.PrognosticVariables PV):

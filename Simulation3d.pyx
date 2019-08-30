@@ -196,19 +196,21 @@ class Simulation3d:
             double restart_dt = 0.0
             double vis_dt = 0.0
             double min_dt = 0.0
+            double af = self.TS.acceleration_factor
 
+        # CLARE: implement mean state acceleration for DYCOMS RF02
         if self.TS.t > 0 and self.TS.rk_step == self.TS.n_rk_steps - 1:
             # Adjust time step for output if necessary
-            fields_dt = self.FieldsIO.last_output_time + self.FieldsIO.frequency - self.TS.t
-            stats_dt = self.StatsIO.last_output_time + self.StatsIO.frequency - self.TS.t
-            condstats_dt = self.CondStatsIO.last_output_time + self.CondStatsIO.frequency - self.TS.t
-            restart_dt = self.Restart.last_restart_time + self.Restart.frequency - self.TS.t
-            vis_dt = self.VO.last_vis_time + self.VO.frequency - self.TS.t
+            fields_dt = (self.FieldsIO.last_output_time + self.FieldsIO.frequency - self.TS.t)/af
+            stats_dt = (self.StatsIO.last_output_time + self.StatsIO.frequency - self.TS.t)/af
+            condstats_dt = (self.CondStatsIO.last_output_time + self.CondStatsIO.frequency - self.TS.t)/af
+            restart_dt = (self.Restart.last_restart_time + self.Restart.frequency - self.TS.t)/af
+            vis_dt = (self.VO.last_vis_time + self.VO.frequency - self.TS.t)/af
 
 
             dts = np.array([fields_dt, stats_dt, condstats_dt, restart_dt, vis_dt,
-                            self.TS.dt, self.TS.dt_max, self.VO.frequency, self.Restart.frequency,
-                            self.StatsIO.frequency, self.CondStatsIO.frequency, self.FieldsIO.frequency])
+                            self.TS.dt, self.TS.dt_max, self.VO.frequency/af, self.Restart.frequency/af,
+                            self.StatsIO.frequency/af, self.CondStatsIO.frequency/af, self.FieldsIO.frequency/af])
 
 
 

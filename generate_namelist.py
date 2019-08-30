@@ -581,6 +581,7 @@ def DYCOMS_RF02():
     namelist['time_stepping']['dt_initial'] = 1.0
     namelist['time_stepping']['dt_max'] = 10.0
     namelist['time_stepping']['t_max'] = 6.0 * 3600.0
+    namelist['time_stepping']['acceleration_factor'] = 1.0
 
     namelist['thermodynamics'] = {}
     namelist['thermodynamics']['latentheat'] = 'constant'
@@ -620,7 +621,7 @@ def DYCOMS_RF02():
 
     namelist['stats_io'] = {}
     namelist['stats_io']['stats_dir'] = 'stats'
-    namelist['stats_io']['auxiliary'] = ['DYCOMS', 'Flux']
+    namelist['stats_io']['auxiliary'] = ['DYCOMS', 'Flux', 'TKE']
     namelist['stats_io']['frequency'] = 60.0
 
     namelist['fields_io'] = {}
