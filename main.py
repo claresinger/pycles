@@ -21,7 +21,7 @@ def main():
 
 def main3d(namelist):
     import Simulation3d
-
+   
     Simulation = Simulation3d.Simulation3d(namelist)
     Simulation.initialize(namelist)
     Simulation.run()
