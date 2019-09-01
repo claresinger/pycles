@@ -85,6 +85,9 @@ cdef class TimeStepping:
 
     cpdef update(self, Grid.Grid Gr, PrognosticVariables.PrognosticVariables PV, ParallelMPI.ParallelMPI Pa):
 
+        # CLARE: implement mean state acceleration for DYCOMS RF02
+        self.accelerate_tendencies(Gr, PV, Pa)
+
         if self.ts_type == 2:
             self.update_second(Gr,PV)
         elif self.ts_type == 3:
